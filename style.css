@@ -40,7 +40,11 @@ body {
 }
 
 #populationChart {
-  visibility: hidden;
+
+}
+
+#energyChart {
+  display: none;
 }
 
 .warning {
@@ -57,4 +61,11 @@ body {
 
 .form-group label {
   display: block;
+}
+
+.chart {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  max-width: 100%;
+  border: 1px solid black;
 }
