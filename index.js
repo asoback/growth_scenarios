@@ -1,5 +1,6 @@
 /* Document */
 const population_chart_element = document.getElementById('populationChart');
+const energy_chart_element = document.getElementById('energyChart');
 
 /* The model */
 const start_year = 1980;
@@ -65,11 +66,37 @@ const generatePopChart = () => {
     });	
 };
 
+/* tab controls */
+const showChart = (e, chart_name) => {
+  console.log("Show chart ", chart_name);
+  if (chart_name == 'Population') {
+    energy_chart_element.style.display = 'none';
+    population_chart_element.style.display = 'block';
+  } else if (chart_name == 'Energy') {
+    population_chart_element.style.display = 'none';
+    energy_chart_element.style.display = 'block';
+  }
+
+  let tablinks = document.getElementsByClassName('tablinks');
+  for (let i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(' active', '');
+  }
+
+  e.currentTarget.className += ' active';
+};
+
 /* main */
 buildYears();
 buildPop();
 generatePopChart();
 
+/* Tab element controls */
+document.getElementById('pop-chart-tab').onclick = () => {
+  showChart(event, "Population");
+};
+document.getElementById('energy-chart-tab').onclick = () => {
+  showChart(event, "Energy");
+};
 
 /* Form controls */
 const f_carrying_cap = document.getElementById("max_pop");
