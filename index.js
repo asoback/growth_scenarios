@@ -8,16 +8,68 @@ const end_year = 2120;
 const beginning_population = 4.46;
 var population_chart;
 
+// This information was generally derived from
+// https://knoema.com/EIAINTL2018May/international-energy-data-monthly-update
+// Public domain
+// Total energy data is a ratio using 1980 as the baseline.
+// Other values are percentages.
+// Renewables includes nuclear, and renewables such as wind and solar.
+const historical_data = {
+  total_energy_1980:      1,
+  total_energy_2018:      2.05,
+  percent_coal_1980:      0.2677,
+  percent_coal_2018:      0.2777,
+  percent_gas_1980:       0.1840,
+  percent_gas_2018:       0.2397,
+  percent_oil_1980:       0.4514,
+  percent_oil_2018:       0.3308,
+  percent_renewable_1980: 0.096,
+  percent_renewable_2018: 0.152,
+}
+
+const getRateFromCompoundInterest = (principle, final, time) => {
+  const interest = final - principle;
+  const rate = interest/(principle * time);
+  return rate;
+};
+
 const model_variables = {
     years: [],
+    current_year: 0,
+    peak_fossil_year: 0,
     pop: {
         carrying_capacity_bil: 10,
         data: [],
         rate: .018
     },
+    renewables: {
+        data: [],
+        rate: 0
+    },
+    coal: {
+        yearsRemaining: 100,
+        data: [],
+        rate: 0
+    },
+    oil: {
+        yearsRemaining: 50,
+        data: [],
+        rate: 0
+    },
+    natural_gas: {
+        yearsRemaining: 50,
+        data: [],
+        rate: 0
+    },
+    demand: {
+        per_capita_peak: 21,
+        data: [],
+        rate: 0
+    }
 };
 
 const buildYears = () => {
+  model_variables.current_year = new Date().getFullYear();
   model_variables.years = [];
   for (let i = start_year; i <= end_year; i++) {
     model_variables.years.push(i);
@@ -85,10 +137,14 @@ const showChart = (e, chart_name) => {
   e.currentTarget.className += ' active';
 };
 
+
+
 /* main */
 buildYears();
 buildPop();
 generatePopChart();
+
+console.log(getRateFromCompoundInterest(historical_data.total_energy_1980, historical_data.total_energy_2018, 2018-1980));
 
 /* Tab element controls */
 document.getElementById('pop-chart-tab').onclick = () => {
