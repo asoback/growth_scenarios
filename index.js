@@ -7,6 +7,7 @@ const start_year = 1980;
 const end_year = 2120;
 const beginning_population = 4.46;
 var population_chart;
+var energy_chart;
 
 // This information was generally derived from
 // https://knoema.com/EIAINTL2018May/international-energy-data-monthly-update
@@ -29,7 +30,7 @@ const historical_data = {
 
 const getRateFromCompoundInterest = (principle, final, time) => {
   const interest = final - principle;
-  const rate = interest/(principle * time);
+  const rate = Math.pow((final/principle), 1/time) - 1;
   return rate;
 };
 
@@ -96,6 +97,132 @@ const buildPop = () => {
   }
 };
 
+const buildEnergy = () => {
+  let num_historical_years = 2018 - 1980;
+
+  model_variables.oil.data = [];
+  model_variables.coal.data = [];
+  model_variables.natural_gas.data = [];
+  model_variables.renewables.data = [];
+  model_variables.demand.data = [];
+
+  // historical data
+  const historical_rate = getRateFromCompoundInterest(
+    historical_data.total_energy_1980, historical_data.total_energy_2018, num_historical_years);
+
+  let current_oil_percent = historical_data.percent_oil_1980;
+  let current_gas_percent = historical_data.percent_gas_1980;
+  let current_coal_percent = historical_data.percent_coal_1980;
+  let current_renewables_percent = historical_data.percent_renewable_1980;
+
+  const current_oil_percent_delta = (historical_data.percent_oil_2018 - historical_data.percent_oil_1980) / num_historical_years;
+  const current_gas_percent_delta = (historical_data.percent_gas_2018 - historical_data.percent_gas_1980) / num_historical_years;
+  const current_coal_percent_delta = (historical_data.percent_coal_2018 - historical_data.percent_coal_1980) / num_historical_years;
+  const current_renewables_percent_delta = (historical_data.percent_renewable_2018 - historical_data.percent_renewable_1980) / num_historical_years;
+
+  // let current_total_primary_energy = historical_data.total_energy_1980;
+  let current_oil = historical_data.percent_oil_1980;
+  let current_gas = historical_data.percent_gas_1980;
+  let current_coal = historical_data.percent_coal_1980;
+  let current_renewables = historical_data.percent_renewable_1980;
+  let current_demand = historical_data.total_energy_1980;
+
+  model_variables.oil.data.push(current_oil);
+  model_variables.coal.data.push(current_coal);
+  model_variables.natural_gas.data.push(current_gas);
+  model_variables.renewables.data.push(current_renewables);
+  model_variables.demand.data.push(current_demand);
+
+  for (let i = 1; i <= 2018-1980; i++) {
+    current_demand = current_demand + (current_demand * historical_rate);
+
+    current_oil_percent = current_oil_percent + current_oil_percent_delta;
+    current_gas_percent = current_gas_percent + current_gas_percent_delta;
+    current_coal_percent = current_coal_percent + current_coal_percent_delta;
+    current_renewables_percent = current_renewables_percent + current_renewables_percent_delta;
+
+    current_oil = current_demand * current_oil_percent;
+    current_gas = current_demand * current_gas_percent;
+    current_coal = current_demand * current_coal_percent;
+    current_renewables = current_demand * current_renewables_percent;
+
+    model_variables.oil.data.push(current_oil);
+    model_variables.coal.data.push(current_coal);
+    model_variables.natural_gas.data.push(current_gas);
+    model_variables.renewables.data.push(current_renewables);
+    model_variables.demand.data.push(current_demand);
+  }
+
+  // Prediction data
+  // TODO
+
+};
+
+const generateEnergyChart = () => {
+  const data = {};
+  data.labels = model_variables.years;
+  data.datasets = [
+    {
+      label: 'Coal Consumption',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      borderColor: 'rgb(0, 0, 0)',
+      data: model_variables.coal.data
+    },
+    {
+      label: 'Oil Consumption',
+      backgroundColor: 'rgba(64, 37, 29, 0.5)',
+      borderColor: 'rgb(64, 37, 29)',
+      data: model_variables.oil.data
+    },
+    {
+      label: 'Natural Gas Consumption',
+      backgroundColor: 'rgba(196, 170, 0, 0.5)',
+      borderColor: 'rgb(196, 170, 0)',
+      data: model_variables.natural_gas.data
+    },
+    {
+      label: 'Renewables and Nuclear Consumption',
+      backgroundColor: 'rgba(0, 181, 30, 0.5)',
+      borderColor: 'rgb(0, 181, 30)',
+      data: model_variables.renewables.data
+    },
+    {
+      label: 'Demand',
+      yAxisID: 'unstacked_line',
+      backgroundColor: 'rgba(255, 120, 250, 0.2)',
+      borderColor: 'rgb(255, 120, 250)',
+      data: model_variables.demand.data
+    },
+  ];
+  let ctx = energy_chart_element.getContext('2d');
+  if (energy_chart) {
+      energy_chart.destroy();
+  }
+  const options = {
+        scales: {
+            yAxes: [{
+                stacked: true,
+                ticks: {
+                    beginAtZero: true,
+                },
+            },{
+                id: 'unstacked_line',
+                stacked: false,
+                display: false, // ticks on y axis
+                ticks: {
+                    beginAtZero: true,
+                },
+            }]
+        }
+    };
+
+    energy_chart = new Chart(ctx, {
+        type: "line",
+        data: data,
+        options: options
+    });	
+};
+
 
 const generatePopChart = () => {
   const data = {};
@@ -120,7 +247,6 @@ const generatePopChart = () => {
 
 /* tab controls */
 const showChart = (e, chart_name) => {
-  console.log("Show chart ", chart_name);
   if (chart_name == 'Population') {
     energy_chart_element.style.display = 'none';
     population_chart_element.style.display = 'block';
@@ -142,9 +268,10 @@ const showChart = (e, chart_name) => {
 /* main */
 buildYears();
 buildPop();
+buildEnergy();
+generateEnergyChart();
 generatePopChart();
-
-console.log(getRateFromCompoundInterest(historical_data.total_energy_1980, historical_data.total_energy_2018, 2018-1980));
+population_chart_element.style.display = 'none';
 
 /* Tab element controls */
 document.getElementById('pop-chart-tab').onclick = () => {
