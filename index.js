@@ -8,6 +8,7 @@ const BILLION = 1000000000;
 /* The model */
 const start_year = 1980;
 const end_year = 2120;
+const num_historical_years = 2018 - 1980;
 const beginning_population = 4.46;
 var population_chart;
 var energy_chart;
@@ -77,7 +78,7 @@ const model_variables = {
 };
 
 const buildYears = () => {
-  model_variables.current_year = new Date().getFullYear();
+  model_variables.current_year = parseInt(new Date().getFullYear());
   model_variables.years = [];
   for (let i = start_year; i <= end_year; i++) {
     model_variables.years.push(i);
@@ -115,9 +116,51 @@ const peakDemandCalc = () => {
     model_variables.pop.carrying_capacity_bil;
 };
 
-const buildEnergy = () => {
-  let num_historical_years = 2018 - 1980;
+const peakThenDecline = (starting_consumption_amount, remaining_amount, peak_consumption_amount, starting_growth_rate, look_ahead) => {
+  const a = [];
+  let last_amount = starting_consumption_amount;
+  let last_remaining = remaining_amount;
+  let sum_used = 0;
 
+  // Grow
+  while (last_remaining >= 1 && last_amount < peak_consumption_amount * 0.95 && look_ahead > 0) {
+      last_amount += last_amount * starting_growth_rate * (1 - (last_amount - starting_consumption_amount) / (peak_consumption_amount - starting_consumption_amount)); 
+      a.push(last_amount);
+      sum_used += last_amount;
+      last_remaining = last_remaining - last_amount;
+      --look_ahead;
+  }
+
+  // Decline
+  let last_rate = 0.001;
+  const max_rate = 0.025;
+  while (last_remaining >= 5 && look_ahead > 0) {
+      last_rate += max_rate * (1 - (remaining_amount - sum_used)/remaining_amount);
+      last_amount = last_amount - (last_amount * last_rate);
+      a.push(last_amount);
+      sum_used += last_amount;
+      last_remaining = last_remaining - last_amount;
+      --look_ahead;
+  } 
+
+  // Last drops
+  while (last_remaining > 0 && look_ahead > 0) {
+      last_amount = last_amount - (last_amount * last_rate);
+      a.push(last_amount);
+      last_remaining = last_remaining - last_amount;
+      --look_ahead;
+  }
+
+  // zero fill
+  while (look_ahead > 0){
+      a.push(0);
+      --look_ahead;
+  }
+
+  return a;
+};
+
+const buildEnergy = () => {
   model_variables.oil.data = [];
   model_variables.coal.data = [];
   model_variables.natural_gas.data = [];
@@ -181,12 +224,40 @@ const buildEnergy = () => {
     current_renewables = current_renewables + (current_renewables * model_variables.renewables.rate);
 
     model_variables.demand.data.push(current_demand);
+    model_variables.renewables.data.push(current_renewables);
   }
+
+  const coal_reserve = current_coal * model_variables.coal.years_remaining;
+  const oil_reserve = current_oil * model_variables.oil.years_remaining;
+  const gas_reserve = current_gas * model_variables.natural_gas.years_remaining;
+
+  let peak_coal_val = current_coal;
+  let peak_oil_val = current_oil;
+  let peak_gas_val = current_gas;
+
+  for (let i = 1; i <= model_variables.peak_fossil_year - 2018; i++) {
+    peak_coal_val = peak_coal_val + (peak_coal_val * model_variables.coal.rate);
+    peak_oil_val = peak_oil_val + (peak_oil_val * model_variables.oil.rate);
+    peak_gas_val = peak_gas_val + (peak_gas_val * model_variables.natural_gas.rate);
+  }
+  const peak_coal = peak_coal_val;
+  const peak_oil = peak_oil_val;
+  const peak_gas = peak_gas_val;
+  const remaining_years = end_year - 2018;
+  console.log("COAL");
+  model_variables.coal.data =
+    model_variables.coal.data.concat(peakThenDecline(current_coal, coal_reserve, peak_coal, model_variables.coal.rate, remaining_years));
+  console.log("OIL");
+  model_variables.oil.data =
+    model_variables.oil.data.concat(peakThenDecline(current_oil, oil_reserve, peak_oil, model_variables.oil.rate, remaining_years));
+  console.log("GAS");
+  model_variables.natural_gas.data =
+    model_variables.natural_gas.data.concat(peakThenDecline(current_gas, gas_reserve, peak_gas, model_variables.natural_gas.rate, remaining_years));
 
 };
 
 const generateEnergyChart = () => {
-  let max_ticks = 10;
+  let max_ticks = 4;
   const data = {};
   data.labels = model_variables.years;
   data.datasets = [
@@ -299,6 +370,8 @@ const showChart = (e, chart_name) => {
 
 /* main */
 
+buildYears();
+
 /* Init variables */
 const f_carrying_cap = document.getElementById("max_pop");
 const f_demand_rate = document.getElementById("demand_rate");
@@ -310,9 +383,26 @@ const f_years_until_peak_fossil = document.getElementById("years_until_peak_foss
 model_variables.pop.carrying_capacity_bil = f_carrying_cap.value;
 model_variables.demand.rate = f_demand_rate.value / 100;
 model_variables.demand.per_capita_peak = f_per_cap_demand.value;
+model_variables.renewables.rate = f_renewables_rate.value / 100;
+model_variables.peak_fossil_year = parseInt(model_variables.current_year) + parseInt(f_years_until_peak_fossil.value);
+model_variables.oil.years_remaining =
+  historical_data.oil_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+model_variables.coal.years_remaining =
+  historical_data.coal_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+model_variables.natural_gas.years_remaining =
+  historical_data.gas_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+
+model_variables.coal.rate = getRateFromCompoundInterest(
+  historical_data.total_energy_1980 * historical_data.percent_coal_1980,
+  historical_data.total_energy_2018 * historical_data.percent_coal_2018, num_historical_years);
+model_variables.oil.rate = getRateFromCompoundInterest(
+  historical_data.total_energy_1980 * historical_data.percent_oil_1980,
+  historical_data.total_energy_2018 * historical_data.percent_oil_2018, num_historical_years);
+model_variables.natural_gas.rate = getRateFromCompoundInterest(
+  historical_data.total_energy_1980 * historical_data.percent_gas_1980,
+  historical_data.total_energy_2018 * historical_data.percent_gas_2018, num_historical_years);
 
 /* Init charts */
-buildYears();
 buildPop();
 buildEnergy();
 generateEnergyChart();
