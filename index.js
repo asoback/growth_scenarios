@@ -29,6 +29,9 @@ const historical_data = {
   percent_oil_2018:       0.3308,
   percent_renewable_1980: 0.096,
   percent_renewable_2018: 0.152,
+  coal_years_remaining: 100,
+  oil_years_remaining: 50,
+  gas_years_remaining: 50
 }
 
 const getRateFromCompoundInterest = (principle, final, time) => {
@@ -51,17 +54,17 @@ const model_variables = {
         rate: 0
     },
     coal: {
-        yearsRemaining: 100,
+        years_remaining: 100,
         data: [],
         rate: 0
     },
     oil: {
-        yearsRemaining: 50,
+        years_remaining: 50,
         data: [],
         rate: 0
     },
     natural_gas: {
-        yearsRemaining: 50,
+        years_remaining: 50,
         data: [],
         rate: 0
     },
@@ -300,6 +303,10 @@ const showChart = (e, chart_name) => {
 const f_carrying_cap = document.getElementById("max_pop");
 const f_demand_rate = document.getElementById("demand_rate");
 const f_per_cap_demand = document.getElementById("per_cap_demand");
+const f_renewables_rate = document.getElementById("renewables_rate");
+const f_undiscovered_fossil = document.getElementById("undiscovered_fossil");
+const f_years_until_peak_fossil = document.getElementById("years_until_peak_fossil");
+
 model_variables.pop.carrying_capacity_bil = f_carrying_cap.value;
 model_variables.demand.rate = f_demand_rate.value / 100;
 model_variables.demand.per_capita_peak = f_per_cap_demand.value;
@@ -335,6 +342,32 @@ f_demand_rate.onchange = () => {
 
 f_per_cap_demand.onchange = () => {
   model_variables.demand.per_capita_peak = f_per_cap_demand.value;
+  buildEnergy();
+  generateEnergyChart();
+};
+
+
+
+//
+f_renewables_rate.onchange = () => {
+  model_variables.renewables.rate = f_renewables_rate.value / 100;
+  buildPop();
+  generatePopChart();
+};
+
+f_undiscovered_fossil.onchange = () => {
+  model_variables.oil.years_remaining =
+    historical_data.oil_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+  model_variables.coal.years_remaining =
+    historical_data.coal_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+  model_variables.natural_gas.years_remaining =
+    historical_data.gas_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+  buildEnergy();
+  generateEnergyChart();
+};
+
+f_years_until_peak_fossil.onchange = () => {
+  model_variables.peak_fossil_year = model_variables.current_year + f_years_until_peak_fossil.value;
   buildEnergy();
   generateEnergyChart();
 };
