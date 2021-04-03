@@ -5,6 +5,14 @@ const energy_chart_element = document.getElementById('energyChart');
 /* Util */
 const BILLION = 1000000000;
 
+/* Init variables */
+const f_carrying_cap = document.getElementById("max_pop");
+const f_demand_rate = document.getElementById("demand_rate");
+const f_per_cap_demand = document.getElementById("per_cap_demand");
+const f_renewables_rate = document.getElementById("renewables_rate");
+const f_undiscovered_fossil = document.getElementById("undiscovered_fossil");
+const f_years_until_peak_fossil = document.getElementById("years_until_peak_fossil");
+
 /* The model */
 const start_year = 1980;
 const end_year = 2120;
@@ -86,11 +94,34 @@ const triggerWarnings = () => {
   }
   const warn_low_energy_demand = document.getElementById("warn_low_energy_demand");
   if (model_variables.demand.rate < .019) {
-    console.log("Show");
     warn_low_energy_demand.style.display = "block";
   } else {
-    console.log("hide");
     warn_low_energy_demand.style.display = "none";
+  }
+
+  const warn_high_undiscovered_resources = document.getElementById("warn_high_undiscovered_resources");
+  if (f_undiscovered_fossil.value > 0) {
+    warn_high_undiscovered_resources.style.display = "block";
+  } else {
+    warn_high_undiscovered_resources.style.display = "none";
+  }
+
+  let energy_shortage = false;
+  const warn_energy_crisis = document.getElementById("warn_energy_crisis");
+  for (let i = 0; i < end_year-start_year; i++) {
+    const total_energy = model_variables.renewables.data[i] + 
+      model_variables.coal.data[i] + 
+      model_variables.oil.data[i] + 
+      model_variables.natural_gas.data[i];
+    if (total_energy > model_variables.demand.data[i] * 0.9) {
+      energy_shortage = true;
+      break;
+    }
+  }
+  if (energy_shortage == true) {
+    warn_energy_crisis.style.display = "block";
+  } else {
+    warn_energy_crisis.style.display = "none";
   }
 };
 
@@ -385,14 +416,6 @@ const showChart = (e, chart_name) => {
 /* main */
 
 buildYears();
-
-/* Init variables */
-const f_carrying_cap = document.getElementById("max_pop");
-const f_demand_rate = document.getElementById("demand_rate");
-const f_per_cap_demand = document.getElementById("per_cap_demand");
-const f_renewables_rate = document.getElementById("renewables_rate");
-const f_undiscovered_fossil = document.getElementById("undiscovered_fossil");
-const f_years_until_peak_fossil = document.getElementById("years_until_peak_fossil");
 
 model_variables.pop.carrying_capacity_bil = f_carrying_cap.value;
 model_variables.demand.rate = f_demand_rate.value / 100;
