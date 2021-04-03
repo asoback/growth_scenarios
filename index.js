@@ -77,6 +77,23 @@ const model_variables = {
     }
 };
 
+const triggerWarnings = () => {
+  const energy_per_cap_low = document.getElementById("energy_per_cap_low");
+  if (model_variables.demand.per_capita_peak < 4) {
+    energy_per_cap_low.style.display = "block";
+  } else {
+    energy_per_cap_low.style.display = "none";
+  }
+  const warn_low_energy_demand = document.getElementById("warn_low_energy_demand");
+  if (model_variables.demand.rate < .019) {
+    console.log("Show");
+    warn_low_energy_demand.style.display = "block";
+  } else {
+    console.log("hide");
+    warn_low_energy_demand.style.display = "none";
+  }
+};
+
 const buildYears = () => {
   model_variables.current_year = parseInt(new Date().getFullYear());
   model_variables.years = [];
@@ -244,16 +261,13 @@ const buildEnergy = () => {
   const peak_oil = peak_oil_val;
   const peak_gas = peak_gas_val;
   const remaining_years = end_year - 2018;
-  console.log("COAL");
+
   model_variables.coal.data =
     model_variables.coal.data.concat(peakThenDecline(current_coal, coal_reserve, peak_coal, model_variables.coal.rate, remaining_years));
-  console.log("OIL");
   model_variables.oil.data =
     model_variables.oil.data.concat(peakThenDecline(current_oil, oil_reserve, peak_oil, model_variables.oil.rate, remaining_years));
-  console.log("GAS");
   model_variables.natural_gas.data =
     model_variables.natural_gas.data.concat(peakThenDecline(current_gas, gas_reserve, peak_gas, model_variables.natural_gas.rate, remaining_years));
-
 };
 
 const generateEnergyChart = () => {
@@ -402,6 +416,9 @@ model_variables.natural_gas.rate = getRateFromCompoundInterest(
   historical_data.total_energy_1980 * historical_data.percent_gas_1980,
   historical_data.total_energy_2018 * historical_data.percent_gas_2018, num_historical_years);
 
+
+console.log("rate", getRateFromCompoundInterest(
+    historical_data.total_energy_1980, historical_data.total_energy_2018, num_historical_years));
 /* Init charts */
 buildPop();
 buildEnergy();
@@ -422,27 +439,28 @@ f_carrying_cap.onchange = () => {
   model_variables.pop.carrying_capacity_bil = f_carrying_cap.value;
   buildPop();
   generatePopChart();
+  triggerWarnings();
 };
 
 f_demand_rate.onchange = () => {
   model_variables.demand.rate = f_demand_rate.value / 100;
   buildEnergy();
   generateEnergyChart();
+  triggerWarnings();
 };
 
 f_per_cap_demand.onchange = () => {
   model_variables.demand.per_capita_peak = f_per_cap_demand.value;
   buildEnergy();
   generateEnergyChart();
+  triggerWarnings();
 };
 
-
-
-//
 f_renewables_rate.onchange = () => {
   model_variables.renewables.rate = f_renewables_rate.value / 100;
   buildPop();
   generatePopChart();
+  triggerWarnings();
 };
 
 f_undiscovered_fossil.onchange = () => {
@@ -454,10 +472,14 @@ f_undiscovered_fossil.onchange = () => {
     historical_data.gas_years_remaining * (1 + f_undiscovered_fossil.value / 100);
   buildEnergy();
   generateEnergyChart();
+  triggerWarnings();
 };
 
 f_years_until_peak_fossil.onchange = () => {
   model_variables.peak_fossil_year = model_variables.current_year + f_years_until_peak_fossil.value;
   buildEnergy();
   generateEnergyChart();
+  triggerWarnings();
 };
+
+triggerWarnings();

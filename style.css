@@ -43,8 +43,10 @@ body {
   display: none;
 }
 
-.warning {
+.warning-message {
+  display: none;
   color: red;
+  font-weight: bold;
 }
 
 .form-group {
