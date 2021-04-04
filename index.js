@@ -4,9 +4,6 @@ const energy_chart_element = document.getElementById('energyChart');
 const population_chart_div_element = document.getElementById('population-chart-div');
 const energy_chart_div_element = document.getElementById('energy-chart-div');
 
-/* Util */
-const BILLION = 1000000000;
-
 /* Init variables */
 const f_carrying_cap = document.getElementById("max_pop");
 const f_demand_rate = document.getElementById("demand_rate");
@@ -88,7 +85,6 @@ const model_variables = {
 };
 
 const triggerWarnings = () => {
-  console.log(model_variables);
   const energy_per_cap_low = document.getElementById("energy_per_cap_low");
   if (model_variables.demand.per_capita_peak < 4) {
     energy_per_cap_low.style.display = "block";
@@ -212,6 +208,7 @@ const peakThenDecline = (starting_consumption_amount, remaining_amount, peak_con
 };
 
 const buildEnergy = () => {
+  // Erase old data
   model_variables.oil.data = [];
   model_variables.coal.data = [];
   model_variables.natural_gas.data = [];
@@ -266,7 +263,7 @@ const buildEnergy = () => {
   }
 
   peakDemandCalc();
-  
+ 
   // Prediction data
   for (let i = 1; i <= end_year-2018; i++) {
     current_demand = current_demand + (current_demand * model_variables.demand.rate * 
@@ -481,8 +478,8 @@ f_per_cap_demand.onchange = () => {
 
 f_renewables_rate.onchange = () => {
   model_variables.renewables.rate = f_renewables_rate.value / 100;
-  buildPop();
-  generatePopChart();
+  buildEnergy();
+  generateEnergyChart();
   triggerWarnings();
 };
 
