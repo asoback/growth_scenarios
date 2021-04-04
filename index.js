@@ -1,6 +1,8 @@
 /* Document */
 const population_chart_element = document.getElementById('populationChart');
 const energy_chart_element = document.getElementById('energyChart');
+const population_chart_div_element = document.getElementById('population-chart-div');
+const energy_chart_div_element = document.getElementById('energy-chart-div');
 
 /* Util */
 const BILLION = 1000000000;
@@ -396,11 +398,11 @@ const generatePopChart = () => {
 /* tab controls */
 const showChart = (e, chart_name) => {
   if (chart_name == 'Population') {
-    energy_chart_element.style.display = 'none';
-    population_chart_element.style.display = 'block';
+    energy_chart_div_element.style.display = 'none';
+    population_chart_div_element.style.display = 'block';
   } else if (chart_name == 'Energy') {
-    population_chart_element.style.display = 'none';
-    energy_chart_element.style.display = 'block';
+    population_chart_div_element.style.display = 'none';
+    energy_chart_div_element.style.display = 'block';
   }
 
   let tablinks = document.getElementsByClassName('tablinks');
@@ -443,8 +445,8 @@ buildPop();
 buildEnergy();
 generateEnergyChart();
 generatePopChart();
-population_chart_element.style.display = 'none';
-energy_chart_element.style.display = 'block';
+population_chart_div_element.style.display = 'none';
+energy_chart_div_element.style.display = 'block';
 
 /* Tab element controls */
 document.getElementById('pop-chart-tab').onclick = () => {
