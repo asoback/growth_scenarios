@@ -167,28 +167,35 @@ const peakThenDecline = (starting_consumption_amount, remaining_amount, peak_con
   const a = [];
   let last_amount = starting_consumption_amount;
   let last_remaining = remaining_amount;
-  let sum_used = 0;
 
   // Grow
   while (last_remaining >= 1 && last_amount < peak_consumption_amount * 0.95 && look_ahead > 0) {
       last_amount += last_amount * starting_growth_rate * (1 - (last_amount - starting_consumption_amount) / (peak_consumption_amount - starting_consumption_amount)); 
       a.push(last_amount);
-      sum_used += last_amount;
       last_remaining = last_remaining - last_amount;
       --look_ahead;
   }
+  console.log("decline");
+  console.log("Look ahead ", look_ahead);
+  console.log("remaining", last_remaining);
+  console.log("last_amount", last_amount);
+  console.log("years at this rate ", last_remaining / last_amount);
 
   // Decline
-  let last_rate = 0.001;
-  const max_rate = 0.025;
-  while (last_remaining >= 5 && look_ahead > 0) {
-      last_rate += max_rate * (1 - (remaining_amount - sum_used)/remaining_amount);
-      last_amount = last_amount - (last_amount * last_rate);
-      a.push(last_amount);
-      sum_used += last_amount;
-      last_remaining = last_remaining - last_amount;
-      --look_ahead;
+  const decline_start_val = last_remaining;
+  const amount_start_val = last_amount;
+  let last_rate = 0;
+  while (last_remaining >= remaining_amount * .01 && look_ahead > 0) {
+    last_rate = (decline_start_val - last_remaining)/decline_start_val;;
+    last_amount = amount_start_val - (amount_start_val * last_rate);
+    a.push(last_amount);
+    last_remaining = last_remaining - last_amount;
+    --look_ahead;
   } 
+
+  console.log("drip");
+  console.log("Look ahead ", look_ahead);
+  console.log("remaining", last_remaining);
 
   // Last drops
   while (last_remaining > 0 && look_ahead > 0) {
@@ -459,6 +466,8 @@ f_carrying_cap.onchange = () => {
   model_variables.pop.carrying_capacity_bil = f_carrying_cap.value;
   buildPop();
   generatePopChart();
+  buildEnergy();
+  generateEnergyChart();
   triggerWarnings();
 };
 
@@ -490,6 +499,7 @@ f_undiscovered_fossil.onchange = () => {
     historical_data.coal_years_remaining * (1 + f_undiscovered_fossil.value / 100);
   model_variables.natural_gas.years_remaining =
     historical_data.gas_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+
   buildEnergy();
   generateEnergyChart();
   triggerWarnings();
