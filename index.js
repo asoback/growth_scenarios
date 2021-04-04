@@ -88,6 +88,7 @@ const model_variables = {
 };
 
 const triggerWarnings = () => {
+  console.log(model_variables);
   const energy_per_cap_low = document.getElementById("energy_per_cap_low");
   if (model_variables.demand.per_capita_peak < 4) {
     energy_per_cap_low.style.display = "block";
@@ -498,7 +499,7 @@ f_undiscovered_fossil.onchange = () => {
 };
 
 f_years_until_peak_fossil.onchange = () => {
-  model_variables.peak_fossil_year = model_variables.current_year + f_years_until_peak_fossil.value;
+  model_variables.peak_fossil_year = model_variables.current_year + parseInt(f_years_until_peak_fossil.value);
   buildEnergy();
   generateEnergyChart();
   triggerWarnings();
