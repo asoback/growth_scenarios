@@ -340,37 +340,37 @@ const generateEnergyChart = () => {
   ];
   let ctx = energy_chart_element.getContext('2d');
   if (energy_chart) {
-      energy_chart.destroy();
+    energy_chart.destroy();
   }
   const options = {
-        scales: {
-            yAxes: [{
-                stacked: true,
-                ticks: {
-                    beginAtZero: true,
-                    min: 0,
-                    max: max_ticks
-                },
-            },{
-                id: 'unstacked_line',
-                stacked: false,
-                display: false, // ticks on y axis
-                ticks: {
-                    beginAtZero: true,
-                    min: 0,
-                    max: max_ticks
-                },
-            }]
-        }
-    };
+    scales: {
+      yAxes: [{
+        stacked: true,
+        ticks: {
+          beginAtZero: true,
+          min: 0,
+          max: max_ticks
+        },
+      },
+      {
+        id: 'unstacked_line',
+        stacked: false,
+        display: false, // ticks on y axis
+        ticks: {
+          beginAtZero: true,
+          min: 0,
+          max: max_ticks
+        },
+      }]
+    }
+  };
 
-    energy_chart = new Chart(ctx, {
-        type: "line",
-        data: data,
-        options: options
-    });	
+  energy_chart = new Chart(ctx, {
+    type: "line",
+    data: data,
+    options: options
+  });	
 };
-
 
 const generatePopChart = () => {
   const data = {};
@@ -384,13 +384,13 @@ const generatePopChart = () => {
   ];
   let ctx = population_chart_element.getContext('2d');
   if (population_chart) {
-      population_chart.destroy();
-    }
-    population_chart = new Chart(ctx, {
-        type: "line",
-        data: data,
-        options: {}
-    });	
+    population_chart.destroy();
+  }
+  population_chart = new Chart(ctx, {
+    type: "line",
+    data: data,
+    options: {}
+  });	
 };
 
 /* tab controls */
@@ -410,7 +410,6 @@ const showChart = (e, chart_name) => {
 
   e.currentTarget.className += ' active';
 };
-
 
 
 /* main */
@@ -439,15 +438,13 @@ model_variables.natural_gas.rate = getRateFromCompoundInterest(
   historical_data.total_energy_1980 * historical_data.percent_gas_1980,
   historical_data.total_energy_2018 * historical_data.percent_gas_2018, num_historical_years);
 
-
-console.log("rate", getRateFromCompoundInterest(
-    historical_data.total_energy_1980, historical_data.total_energy_2018, num_historical_years));
 /* Init charts */
 buildPop();
 buildEnergy();
 generateEnergyChart();
 generatePopChart();
 population_chart_element.style.display = 'none';
+energy_chart_element.style.display = 'block';
 
 /* Tab element controls */
 document.getElementById('pop-chart-tab').onclick = () => {
