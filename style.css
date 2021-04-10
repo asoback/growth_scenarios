@@ -130,11 +130,11 @@ h1, h4 {
 
 .tooltip .tooltip-text {
   visibility: hidden;
-  width: 120px;
+  width: 500px;
   background-color: #555;
-  color: #fff;
+  color: #cccccc;
   text-align: center;
-  padding: 5px 0;
+  padding: 10px 10px;
   border-radius: 6px;
 
   /* Position the tooltip text */
