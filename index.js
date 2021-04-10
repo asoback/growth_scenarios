@@ -112,7 +112,7 @@ const triggerWarnings = () => {
       model_variables.coal.data[i] + 
       model_variables.oil.data[i] + 
       model_variables.natural_gas.data[i];
-    if (total_energy > model_variables.demand.data[i] * 0.9) {
+    if (total_energy * 0.85 > model_variables.demand.data[i]) {
       energy_shortage = true;
       break;
     }
@@ -175,11 +175,6 @@ const peakThenDecline = (starting_consumption_amount, remaining_amount, peak_con
       last_remaining = last_remaining - last_amount;
       --look_ahead;
   }
-  console.log("decline");
-  console.log("Look ahead ", look_ahead);
-  console.log("remaining", last_remaining);
-  console.log("last_amount", last_amount);
-  console.log("years at this rate ", last_remaining / last_amount);
 
   // Decline
   const decline_start_val = last_remaining;
@@ -192,10 +187,6 @@ const peakThenDecline = (starting_consumption_amount, remaining_amount, peak_con
     last_remaining = last_remaining - last_amount;
     --look_ahead;
   } 
-
-  console.log("drip");
-  console.log("Look ahead ", look_ahead);
-  console.log("remaining", last_remaining);
 
   // Last drops
   while (last_remaining > 0 && look_ahead > 0) {
