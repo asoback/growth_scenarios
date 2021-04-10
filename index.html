@@ -68,27 +68,79 @@
       <div>
         <div class="container">
           <div class="grid-column form-group">
-            <label for="max_pop">Population Carrying Capacity (Billions)</label>
+            <div class="form-label">
+              <label for="max_pop">Population Carrying Capacity (Billions)</label>
+              <div class="tooltip">
+                <img src="public/images/question_mark.png" alt="help">
+                <span class="tooltip-text">
+                  This is the point at which Earth's total human population
+                  will stabilize.
+                </span>
+              </div> 
+            </div>
             <input id="max_pop" type="number" value="10" min="8" max="25">
           </div>
           <div class="grid-column form-group">
-            <label for="per_cap_demand">Per Capita Energy Consumption. </label>
+            <div class="form-label">
+              <label for="per_cap_demand">Per Capita Energy Consumption. </label>
+              <div class="tooltip">
+                <img src="public/images/question_mark.png" alt="help">
+                <span class="tooltip-text">
+                  This is the maximum amount energy the average person will end up using, 100 years from now,
+                  relative to today's average person. Subject to the rate of growth of demand.
+                </span>
+              </div> 
+            </div>
             <input id="per_cap_demand" type="number" value="4">
           </div>
         </div>
         <div class="container">
           <div class="grid-column form-group">
-            <label for="demand_rate">Rate of growth for demand</label>
+            <div class="form-label">
+              <label for="demand_rate">Rate of growth for demand</label>
+              <div class="tooltip">
+                <img src="public/images/question_mark.png" alt="help">
+                <span class="tooltip-text">
+                  This is how fast total energy demand will increase.
+                </span>
+              </div> 
+            </div>
             <input id="demand_rate" type="number" value="2" max="5" min="0" step=".1">%
-
-            <label for="renewables_rate">Rate of growth for renewables and nuclear</label>
+            <div class="form-label">
+              <label for="renewables_rate">Rate of growth for renewables and nuclear</label>
+              <div class="tooltip">
+                <img src="public/images/question_mark.png" alt="help">
+                <span class="tooltip-text">
+                  This is how fast humanity can build more renewable energy sources, and nuclear.
+                  This includes wind, solar, geothermal, and bio fuels, and others.
+                </span>
+              </div> 
+            </div>
             <input id="renewables_rate" type="number" value="2" max="25" min="0" step=".1">%
           </div>
           <div class="grid-column form-group">
-            <label for="undiscovered_fossil">Extra usable undiscovered Resouces</label>
+            <div class="form-label">
+              <label for="undiscovered_fossil">Extra usable undiscovered Resouces</label>
+              <div class="tooltip">
+                <img src="public/images/question_mark.png" alt="help">
+                <span class="tooltip-text">
+                  How much fossil fuels are still in the ground, that we don't know about, that
+                  can still be extracted using less energy than is gained.
+                </span>
+              </div> 
+            </div>
             <input id="undiscovered_fossil" type="number" value="0" step="10">%
-
-            <label for="years_until_peak_fossil">Years until peak fossil</label>
+            
+            <div class="form-label">
+              <label for="years_until_peak_fossil">Years until peak fossil</label>
+              <div class="tooltip">
+                <img src="public/images/question_mark.png" alt="help">
+                <span class="tooltip-text">
+                  How far into the future will humanity start using less
+                  fossil fuels than the previous year?
+                </span>
+              </div> 
+            </div>
             <input id="years_until_peak_fossil" type="number" min="0" value="20" step="5">
           </div>
         </div>

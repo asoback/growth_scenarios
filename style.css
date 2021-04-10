@@ -80,11 +80,15 @@ h1, h4 {
   border-radius: 4px;
   padding: 3px;
   margin: 5px;
-  width: 30%;
+  width: 40%;
 }
 
-.form-group label {
+
+.form-group .form-label {
   display: block;
+}
+.form-group .form-label img{  
+  margin-left: 5px;
 }
 
 .chart {
@@ -117,4 +121,35 @@ h1, h4 {
 
 .tab button.active {
   background-color: #cccccc;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }
