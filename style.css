@@ -14,9 +14,19 @@ body {
   grid-template-columns: repeat(3, 1fr);
 }
 
+h1, h4 {
+  color: #010101;
+  font-weight: 600;
+}
+
+.title {
+  text-align: center;
+}
+
 .container {
   display: flex;
   margin: 0;
+  justify-content: center;
 }
 
 .grid-column {
@@ -70,7 +80,7 @@ body {
   border-radius: 4px;
   padding: 3px;
   margin: 5px;
-  
+  width: 30%;
 }
 
 .form-group label {
