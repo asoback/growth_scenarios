@@ -42,8 +42,7 @@ h1, h4 {
 .grid-column-left {
   width: 20%;
   background-image: url(public/images/zbynek-burival-4NhqyQeErP8-unsplash.jpg);
-  background-size: 600%;
-  background-position: 65%, 0%;
+  background-size: 100%;
   background-repeat: no-repeat;
   overflow: hidden;
   position: relative;
@@ -51,9 +50,8 @@ h1, h4 {
 
 .grid-column-right {
   width: 20%;
+  background-size: 100%;
   background-image: url(public/images/daniel-abadia-Njq3Nz6-5rQ-unsplash.jpg);
-  background-size: 500%;
-  background-position: 67%, 0%;
   background-repeat: no-repeat;
   overflow: hidden;
   position: relative;
