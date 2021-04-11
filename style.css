@@ -151,3 +151,7 @@ h1, h4 {
   visibility: visible;
   opacity: 1;
 }
+
+.form-header {
+  text-align: center;
+}
