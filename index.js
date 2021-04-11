@@ -112,7 +112,8 @@ const triggerWarnings = () => {
       model_variables.coal.data[i] + 
       model_variables.oil.data[i] + 
       model_variables.natural_gas.data[i];
-    if (total_energy * 0.85 > model_variables.demand.data[i]) {
+      console.log()
+    if (total_energy < model_variables.demand.data[i]  * 0.85) {
       energy_shortage = true;
       break;
     }
