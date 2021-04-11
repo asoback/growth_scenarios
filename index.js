@@ -332,8 +332,8 @@ const generateEnergyChart = () => {
     {
       label: 'Demand',
       yAxisID: 'unstacked_line',
-      backgroundColor: 'rgba(255, 120, 250, 0.2)',
-      borderColor: 'rgb(255, 120, 250)',
+      backgroundColor: 'rgba(255, 0, 0, 0.3)',
+      borderColor: 'rgb(255, 0, 0)',
       data: model_variables.demand.data
     },
   ];
@@ -448,9 +448,20 @@ energy_chart_div_element.style.display = 'block';
 /* Tab element controls */
 document.getElementById('pop-chart-tab').onclick = () => {
   showChart(event, "Population");
+  f_demand_rate.disabled = true;
+  f_per_cap_demand.disabled = true;
+  f_renewables_rate.disabled = true;
+  f_undiscovered_fossil.disabled = true;
+  f_years_until_peak_fossil.disabled = true;
 };
+
 document.getElementById('energy-chart-tab').onclick = () => {
   showChart(event, "Energy");
+  f_demand_rate.disabled = false;
+  f_per_cap_demand.disabled = false;
+  f_renewables_rate.disabled = false;
+  f_undiscovered_fossil.disabled = false;
+  f_years_until_peak_fossil.disabled = false;
 };
 
 /* Form controls */
