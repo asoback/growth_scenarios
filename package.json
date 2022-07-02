@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/asoback/growth_scenarios#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "package.json": "^2.0.1"
   }
 }
