@@ -414,9 +414,21 @@ const resetValues = () => {
   f_carrying_cap.value            = 11;
   f_demand_rate.value             = 2;
   f_per_cap_demand.value          = 4;
-  f_renewables_rate.value         = 7;
+  f_renewables_rate.value         = 2.4;
   f_undiscovered_fossil.value     = 0;
-  f_years_until_peak_fossil.value = 20;
+  f_years_until_peak_fossil.value = 10;
+
+  model_variables.pop.carrying_capacity_bil = f_carrying_cap.value;
+  model_variables.demand.rate = f_demand_rate.value / 100;
+  model_variables.demand.per_capita_peak = f_per_cap_demand.value;
+  model_variables.renewables.rate = f_renewables_rate.value / 100;
+  model_variables.oil.years_remaining =
+    historical_data.oil_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+  model_variables.coal.years_remaining =
+    historical_data.coal_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+  model_variables.natural_gas.years_remaining =
+    historical_data.gas_years_remaining * (1 + f_undiscovered_fossil.value / 100);
+  model_variables.peak_fossil_year = model_variables.current_year + parseInt(f_years_until_peak_fossil.value);
 };
 
 /* main */
@@ -517,8 +529,6 @@ f_undiscovered_fossil.onchange = () => {
 };
 
 f_years_until_peak_fossil.onchange = () => {
-  console.log("hi");
-
   model_variables.peak_fossil_year = model_variables.current_year + parseInt(f_years_until_peak_fossil.value);
   buildEnergy();
   generateEnergyChart();
@@ -527,9 +537,10 @@ f_years_until_peak_fossil.onchange = () => {
 
 f_reset_button.onclick = () => {
   resetValues();
-  // buildEnergy();
-  // generateEnergyChart();
-  // triggerWarnings();
+  generatePopChart();
+  buildEnergy();
+  generateEnergyChart();
+  triggerWarnings();
 };
 
 triggerWarnings();
