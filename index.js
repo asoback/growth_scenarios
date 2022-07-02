@@ -11,6 +11,7 @@ const f_per_cap_demand = document.getElementById("per_cap_demand");
 const f_renewables_rate = document.getElementById("renewables_rate");
 const f_undiscovered_fossil = document.getElementById("undiscovered_fossil");
 const f_years_until_peak_fossil = document.getElementById("years_until_peak_fossil");
+const f_reset_button = document.getElementById("reset_button");
 
 /* The model */
 const start_year = 1980;
@@ -112,7 +113,6 @@ const triggerWarnings = () => {
       model_variables.coal.data[i] + 
       model_variables.oil.data[i] + 
       model_variables.natural_gas.data[i];
-      console.log()
     if (total_energy < model_variables.demand.data[i]  * 0.85) {
       energy_shortage = true;
       break;
@@ -410,6 +410,14 @@ const showChart = (e, chart_name) => {
   e.currentTarget.className += ' active';
 };
 
+const resetValues = () => {
+  f_carrying_cap.value            = 11;
+  f_demand_rate.value             = 2;
+  f_per_cap_demand.value          = 4;
+  f_renewables_rate.value         = 7;
+  f_undiscovered_fossil.value     = 0;
+  f_years_until_peak_fossil.value = 20;
+};
 
 /* main */
 
@@ -509,10 +517,19 @@ f_undiscovered_fossil.onchange = () => {
 };
 
 f_years_until_peak_fossil.onchange = () => {
+  console.log("hi");
+
   model_variables.peak_fossil_year = model_variables.current_year + parseInt(f_years_until_peak_fossil.value);
   buildEnergy();
   generateEnergyChart();
   triggerWarnings();
+};
+
+f_reset_button.onclick = () => {
+  resetValues();
+  // buildEnergy();
+  // generateEnergyChart();
+  // triggerWarnings();
 };
 
 triggerWarnings();
