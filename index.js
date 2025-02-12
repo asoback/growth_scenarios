@@ -18,6 +18,7 @@ const start_year = 1980;
 const end_year = 2120;
 const num_historical_years = 2018 - 1980;
 const beginning_population = 4.46;
+const population_2025 = 8.2;
 var population_chart;
 var energy_chart;
 
@@ -56,7 +57,7 @@ const model_variables = {
     pop: {
         carrying_capacity_bil: 10,
         data: [],
-        rate: .018
+        rate: .019
     },
     renewables: {
         data: [],
@@ -136,20 +137,23 @@ const buildYears = () => {
 const buildPop = () => {
   // See https://en.wikipedia.org/wiki/Logistic_function
   const num_years = end_year - start_year; 
-  let last_pop = beginning_population;
+  let P0 = beginning_population;
+  const K = model_variables.pop.carrying_capacity_bil;
+  const P_t = 8.2; // Population in 2024
+  const t = 44; // Years since 1980
+  
+  // Solve for r dynamically
+  const r = -Math.log(((K - P_t) / P_t) * ((P0) / (K - P0))) / t;
+  console.log("Rate is ", r)
+
   model_variables.pop.data = [];
   
   for (let i = 0; i < num_years; i++) {
-    const pop_growth = 
-      last_pop * model_variables.pop.rate *
-        (1 -
-          ((last_pop - beginning_population) /
-          (model_variables.pop.carrying_capacity_bil - beginning_population))
-        );
-    const curr_pop = last_pop + pop_growth;
-
+    const curr_pop = K / (1 + ((K - P0) / P0) * Math.exp(-r * i));
     model_variables.pop.data.push(curr_pop);
-    last_pop = curr_pop;
+    if (i != 0) {
+      console.log(start_year + i, "Pop change: ", model_variables.pop.data[i] - model_variables.pop.data[i-1])
+    }
   }
 };
 
